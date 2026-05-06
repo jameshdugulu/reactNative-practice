@@ -1,35 +1,64 @@
-import { Tabs } from 'expo-router';
-import React from 'react';
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { Tabs } from "expo-router";
+import { Colors } from "../../constants/theme";
+import { useColorScheme } from "../../hooks/use-color-scheme";
 
-import { HapticTab } from '@/components/haptic-tab';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-
-export default function TabLayout() {
+const TabsLayout = () => {
   const colorScheme = useColorScheme();
-
+  const colors = Colors[colorScheme ?? "light"] ?? Colors.light;
   return (
     <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+      screenOptions={({ route }) => ({
+        tabBarStyle: {
+          backgroundColor: colors.background,
+          borderTopWidth: 0.5,
+          borderTopColor: colors.icon,
+          height: 70,
+          paddingBottom: 5,
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: -1 },
+          shadowOpacity: 0.2,
+          shadowRadius: 3,
+          elevation: 5,
+          position: "absolute",
+        },
+        tabBarActiveTintColor: colors.tabIconSelected,
+        tabBarInactiveTintColor: colors.tabIconDefault,
+        tabBarShowLabel: true,
+        tabBarLabelStyle: {
+          fontSize: 12,
+          fontWeight: "600",
+        },
         headerShown: false,
-        tabBarButton: HapticTab,
-      }}>
+        tabBarIcon: ({ focused, color, size }) => {
+          let iconName;
+
+          if (route.name === "home") {
+            iconName = focused ? "home" : "home-outline";
+          } else if (route.name === "list") {
+            iconName = focused ? "list" : "list-outline";
+          }
+
+          return <Ionicons name={iconName as any} size={size} color={color} />;
+        },
+      })}
+    >
       <Tabs.Screen
-        name="index"
+        name="home"
         options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          title: "Home",
+          tabBarLabel: "Home",
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="list"
         options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          title: "List",
+          tabBarLabel: "List",
         }}
       />
     </Tabs>
   );
-}
+};
+
+export default TabsLayout;
